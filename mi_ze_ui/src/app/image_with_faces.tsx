@@ -1,6 +1,7 @@
 // ImageWithFaces.tsx
 import { FC, useEffect, useState } from 'react';
 import FaceComponent from './face';
+import UpdateFace from './update_face';
 var BACKEND="http://127.0.0.1:8000"
 
 interface ImageWithFacesProps {
@@ -11,7 +12,6 @@ interface ImageWithFacesProps {
 const ImageWithFaces: FC<ImageWithFacesProps> = ({ imageData, persons }) => {
   const [image, setImage] = useState<HTMLImageElement  | null>(null);
   const [selectedFaceId, setSelectedFaceId] = useState<string | null>(null);
-
   useEffect(() => {
     const fetchImage = async () => {
       try {
@@ -50,15 +50,17 @@ const ImageWithFaces: FC<ImageWithFacesProps> = ({ imageData, persons }) => {
     };
   }, [image]);
 
-  const handleFaceClick = (faceId: string) => {
-    if(selectedFaceId === faceId) {
-      setSelectedFaceId(null);
-      return;
-    }
-    setSelectedFaceId(faceId);
-    // Perform any other actions when a box is clicked
-    console.log(`Box with ID ${faceId} clicked`);
+ 
+
+  const handleFaceClick = async (faceId: string) => {
+    setSelectedFaceId((prevFaceId) => (prevFaceId === faceId ? null : faceId));
+
   };
+  
+
+
+
+
 
   if (!image) {
     return <div>Loading image...</div>;
@@ -71,6 +73,12 @@ const ImageWithFaces: FC<ImageWithFacesProps> = ({ imageData, persons }) => {
 
   return (
     <div style={{ position: 'relative', width: '100%' }}>
+      {selectedFaceId !== null? ( <div style={{ position: 'absolute', bottom: "20px", left: "20%", width: '60%', height: '222px', zIndex: 1,  }}>
+        <UpdateFace
+          persons={persons}
+          face={imageData.faces.find((face) => face.face_id === selectedFaceId) as FaceDataModel}
+        />
+      </div>): null}
     <img
       src={image.src}
       alt="Your Image"
