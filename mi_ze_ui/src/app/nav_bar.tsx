@@ -1,15 +1,50 @@
 import React from 'react';
 
+var BACKEND = "http://127.0.0.1:8000";
+
 interface NavBarProps {
-  setPersonsData: React.Dispatch<React.SetStateAction<any[]>>; // Adjust the type based on your actual data structure
+  setPersonsData: React.Dispatch<React.SetStateAction<any[]>>;
 }
-const NavBar: React.FC<NavBarProps> = ({ setPersonsData }) => {  return (
+
+const NavBar: React.FC<NavBarProps> = ({ setPersonsData }) => {
+  const handleAddPerson = async () => {
+    // Ask the user for the new person's name
+    const newName = prompt('Enter the name of the new person:');
+    
+    if (newName) {
+      try {
+        var person :PersonDataModel = {name: newName, person_id: "",verified_faces:[]}
+        // Make an HTTP request to create a new person
+        const response = await fetch(`${BACKEND}/persons`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify([person]),
+        });
+
+        if (response.ok) {
+          // If the request is successful, update the persons data
+          const newPerson = await response.json();
+          setPersonsData((prevPersons) => [...prevPersons, newPerson]);
+        } else {
+          console.error('Failed to create a new person:', response.status, response.statusText);
+        }
+      } catch (error) {
+        console.error('Error creating a new person:', error);
+      }
+    }
+  };
+
+  return (
     <nav style={navStyles}>
       <div style={titleContainerStyles}>
         <h1 style={titleStyles}>Mi ZE</h1>
       </div>
       <div style={buttonContainerStyles}>
-        <button style={buttonStyles}>Add Person</button>
+        <button style={buttonStyles} onClick={handleAddPerson}>
+          Add Person
+        </button>
         <button style={buttonStyles}>Add Image</button>
       </div>
     </nav>
@@ -27,7 +62,7 @@ const navStyles: React.CSSProperties = {
   padding: '1rem',
   background: '#333',
   boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-  zIndex: 1000, // Ensure it's above other elements
+  zIndex: 1000,
 };
 
 const titleContainerStyles: React.CSSProperties = {
