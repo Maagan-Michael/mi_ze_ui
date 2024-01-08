@@ -4,9 +4,10 @@ var BACKEND="http://127.0.0.1:8000"
 
 interface ImageWithFacesProps {
   imageData: ImageDataModel;
+  persons: PersonDataModel[];
 }
 
-const ImageWithFaces: FC<ImageWithFacesProps> = ({ imageData }) => {
+const ImageWithFaces: FC<ImageWithFacesProps> = ({ imageData, persons }) => {
   const [image, setImage] = useState<HTMLImageElement  | null>(null);
   const [selectedFaceId, setSelectedFaceId] = useState<string | null>(null);
 
@@ -62,6 +63,11 @@ const ImageWithFaces: FC<ImageWithFacesProps> = ({ imageData }) => {
     return <div>Loading image...</div>;
   }
 
+  const getPersonNameById = (persons: PersonDataModel[], id: string): string | undefined => {
+    const person = persons.find(person => person.person_id === id);
+    return person?.name;
+  };
+
   return (
     <div style={{ position: 'relative', width: '100%' }}>
     <img
@@ -79,15 +85,14 @@ const ImageWithFaces: FC<ImageWithFacesProps> = ({ imageData }) => {
           top: `${(face.box.y / imageData.metadata.original_height) * 100}%`,
           width: `${(face.box.w / imageData.metadata.original_width) * 100}%`,
           height: `${(face.box.h / imageData.metadata.original_height) * 100}%`,
-          border: selectedFaceId === face.face_id ? '6px solid red' : '4px solid green',
+          border: selectedFaceId === face.face_id ? '3px solid red' : '2px solid green',
           cursor: 'pointer',
         }}
       >
        <div style={{ position: 'absolute', top: '-60px', left: '50%', transform: 'translateX(-50%)', color: 'white', background: 'rgba(0, 0, 0, 0.7)', padding: '2px', borderRadius: '4px' }}>
-        <p>{`${face.person_id}`}</p>
+        <p>{`${getPersonNameById(persons, face.person_id)}`}</p>
         <p>{`${face.is_verified?"verified": face.certainty}`}</p>
       </div>
-      <div style={{ border: selectedFaceId === face.face_id ? '6px solid red' : '4px solid green' }}></div>
     </div>
     ))}
   </div>

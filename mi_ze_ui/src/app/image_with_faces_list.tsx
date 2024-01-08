@@ -7,9 +7,10 @@ import ImageWithFaces from './image_with_faces';
 interface ImageWithFacesListProps {
   // You may need to adjust this based on the actual endpoint and request structure
   imagesEndpoint: string;
+  persons: PersonDataModel[];
 }
 
-const ImageWithFacesList: FC<ImageWithFacesListProps> = ({ imagesEndpoint }) => {
+const ImageWithFacesList: FC<ImageWithFacesListProps> = ({ imagesEndpoint, persons }) => {
   const [images, setImages] = useState<ImageDataModel[]>([]);
 
   useEffect(() => {
@@ -26,11 +27,12 @@ const ImageWithFacesList: FC<ImageWithFacesListProps> = ({ imagesEndpoint }) => 
     fetchImages();
   }, [imagesEndpoint]);
 
+
   return (
     <div>
       <h1>List of Images with Faces</h1>
       {images.map((imageData, index) => (
-        <ImageWithFaces key={index} imageData={imageData} />
+        <ImageWithFaces key={index} imageData={imageData} persons={persons}/>
       ))}
     </div>
   );
