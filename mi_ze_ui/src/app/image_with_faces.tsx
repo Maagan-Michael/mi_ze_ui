@@ -1,5 +1,6 @@
 // ImageWithFaces.tsx
 import { FC, useEffect, useState } from 'react';
+import FaceComponent from './face';
 var BACKEND="http://127.0.0.1:8000"
 
 interface ImageWithFacesProps {
@@ -63,9 +64,9 @@ const ImageWithFaces: FC<ImageWithFacesProps> = ({ imageData, persons }) => {
     return <div>Loading image...</div>;
   }
 
-  const getPersonNameById = (persons: PersonDataModel[], id: string): string | undefined => {
+  const getPersonById = (persons: PersonDataModel[], id: string): PersonDataModel | undefined => {
     const person = persons.find(person => person.person_id === id);
-    return person?.name;
+    return person;
   };
 
   return (
@@ -76,24 +77,14 @@ const ImageWithFaces: FC<ImageWithFacesProps> = ({ imageData, persons }) => {
       style={{ width: '100%', height: 'auto' }}
     />
     {imageData.faces.map((face) => (
-      <div
+      <FaceComponent
         key={face.face_id}
-        onClick={() => handleFaceClick(face.face_id)}
-        style={{
-          position: 'absolute',
-          left: `${(face.box.x / imageData.metadata.original_width) * 100}%`,
-          top: `${(face.box.y / imageData.metadata.original_height) * 100}%`,
-          width: `${(face.box.w / imageData.metadata.original_width) * 100}%`,
-          height: `${(face.box.h / imageData.metadata.original_height) * 100}%`,
-          border: selectedFaceId === face.face_id ? '3px solid red' : '2px solid green',
-          cursor: 'pointer',
-        }}
-      >
-       <div style={{ position: 'absolute', top: '-60px', left: '50%', transform: 'translateX(-50%)', color: 'white', background: 'rgba(0, 0, 0, 0.7)', padding: '2px', borderRadius: '4px' }}>
-        <p>{`${getPersonNameById(persons, face.person_id)}`}</p>
-        <p>{`${face.is_verified?"verified": face.certainty}`}</p>
-      </div>
-    </div>
+        face={face}
+        imageData={imageData}
+        person={getPersonById(persons, face.person_id) as PersonDataModel}
+        handleFaceClick={handleFaceClick}
+        selectedFaceId={selectedFaceId}
+      />
     ))}
   </div>
   
