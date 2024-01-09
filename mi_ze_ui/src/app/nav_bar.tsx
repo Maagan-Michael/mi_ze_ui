@@ -1,4 +1,5 @@
-import React from 'react';
+"use client";
+import React, { useState } from 'react';
 
 var BACKEND = "http://127.0.0.1:8000";
 
@@ -7,6 +8,34 @@ interface NavBarProps {
 }
 
 const NavBar: React.FC<NavBarProps> = ({ setPersonsData }) => {
+  const [updatingDatabase, setUpdatingDatabase] = useState(false);
+
+  const handleUpdateDatabase = async () => {
+    try {
+      setUpdatingDatabase(true);
+
+      // Make an HTTP request to update the database
+      const response = await fetch(`${BACKEND}/update-database`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Add request body if needed
+      });
+
+      if (response.ok) {
+        // If the request is successful, update the persons data (if needed)
+        // setPersonsData((prevPersons) => [...prevPersons, updatedData]);
+        console.log('Database updated successfully!');
+      } else {
+        console.error('Failed to update the database:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('Error updating the database:', error);
+    } finally {
+      setUpdatingDatabase(false);
+    }
+  };
   const handleAddPerson = async () => {
     // Ask the user for the new person's name
     const newName = prompt('Enter the name of the new person:');
@@ -46,6 +75,13 @@ const NavBar: React.FC<NavBarProps> = ({ setPersonsData }) => {
           Add Person
         </button>
         <button style={buttonStyles}>Add Image</button>
+        <button
+        style={updatingDatabase ? { ...buttonStyles, backgroundColor: 'gray' } : buttonStyles}
+        onClick={handleUpdateDatabase}
+        disabled={updatingDatabase}
+      >
+        {updatingDatabase ? 'Updating Database...' : 'Update Database'}
+      </button>
       </div>
     </nav>
   );
