@@ -55,7 +55,7 @@ interface FaceComponentProps {
               }}
             >
               <p>{`${person == null ? 'unknown' : person.name}`}</p>
-              <p>{`${face.is_verified ? 'Verified' : `Certainty: ${face.certainty}`}`}</p>
+              <p>{`${face.is_verified ? 'Verified' :  `${(face.certainty*100).toFixed(1)}%`} `}</p>
             </div>
           )}
         </div>
